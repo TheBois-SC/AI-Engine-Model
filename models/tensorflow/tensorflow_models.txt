@@ -1,0 +1,6 @@
+Download Model Tensorflow: https://drive.google.com/drive/folders/1d4s1QP6BhiOuXcnENVn0n8SDV_9iVnV6?usp=share_link
+
+Ada 1 file yang harus di download yaitu:
+ - save_ckp_frozen.h5
+
+Simpan di folder /model/tensorflow
