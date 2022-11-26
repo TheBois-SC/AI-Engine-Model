@@ -1,14 +1,9 @@
 import torch
-import torch.nn as nn
 from torchvision.transforms import transforms
-from typing import cast, Any, Union, Dict, List
-from PIL import Image, ImageOps
-import numpy as np
+from PIL import Image
 from rembg import remove
-import matplotlib.pyplot as plt
 import cv2
 from keras.models import load_model
-import tensorflow as tf
 
 from Config.initialization_model import VGG
 from Config.preprocessing_utils import (
@@ -41,7 +36,7 @@ def DetectingFashion(path: str, model_main: VGG, model_wear: VGG, device: torch.
             img_normalized = img_normalized.unsqueeze_(0)
             img_normalized = img_normalized.to(device)
     else:
-        if DetectWearing(path=path, model=model_wear):
+        if DetectWearing(path=path, model=model_wear, device=device):
             api = fashion_tools_segmentation(path, tf_model)
             image_ = api.get_dress(stack=False)
             cv2.imwrite("../images/Segmentation_Result",image_)

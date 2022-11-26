@@ -1,12 +1,13 @@
-import torch
+import torch, time
+from Config.inference import DetectingFashion
 from Config.initialization_model import (
     Init_Main_Model_PT,
     Init_Model_Segmentation_TF,
     Init_Wear_Model_PT
 )
-from Config.Inference import DetectingFashion
+device = torch.device('cpu')
+start_time = time.time()
 
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 def Main(path_image: str):
     mainModel = Init_Main_Model_PT(device=device)
@@ -24,4 +25,5 @@ def Main(path_image: str):
 
 
 if __name__ == "__main__":
-    print(Main("./Gambar.jpg"))
+    print(f"Hasil Pengenalan Gambar: {Main('./Jury_test/hat_4.jpg')}")
+    print("--- %s seconds ---" % (time.time() - start_time))
