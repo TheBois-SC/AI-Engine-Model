@@ -80,7 +80,7 @@ def selfDefineVgg(arch, cfg, batch_norm,  num_classes:int, **kwargs: Any) -> VGG
 
 def Init_Main_Model_PT(device: torch.device):
     model_path = '../models/pytorch'
-    model_name = 'model=2022-11-25_08-28-04-0.9051.pth'
+    model_name = 'Main-model=2022-11-26_00-13-47-0.9620.pth'
 
     model_main = selfDefineVgg(cfgs, 'A', True, 11)
     model_main = model_main.to(device)
@@ -91,7 +91,7 @@ def Init_Main_Model_PT(device: torch.device):
 
 def Init_Wear_Model_PT(device: torch.device):
     model_path = '../models/pytorch'
-    model_name = 'model=2022-11-24_19-41-55-0.9850.pth'
+    model_name = 'Wear-model=2022-11-26_14-45-06-0.9975.pth'
 
     model_wear = selfDefineVgg(cfgs, 'B', True, 2)
     model_wear = model_wear.to(device)

@@ -24,4 +24,4 @@ def Main(path_image: str):
 
 
 if __name__ == "__main__":
-    Main("./Gambar.jpg")
+    print(Main("./Gambar.jpg"))

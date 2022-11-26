@@ -1,7 +1,7 @@
 Download pytorch model: https://drive.google.com/drive/folders/1fDLwBndxIfRkL6WCrmqYDWufMPATLs0T?usp=share_link
 
 Ada 2 file yang harus di download yaitu:
- - Main-model=2022-11-25_13-58-36-0.9480.pth
- - Wear-model=2022-11-24_19-41-55-0.9850.pth
+ - Main-model=2022-11-26_00-13-47-0.9620.pth
+ - Wear-model=2022-11-26_14-45-06-0.9975.pth
 
 Simpan di folder /model/pytorch
