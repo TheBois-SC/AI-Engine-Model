@@ -3,6 +3,9 @@ from torchvision.transforms import transforms
 from PIL import Image
 from rembg import remove
 import cv2
+from io import BytesIO
+import base64
+
 from keras.models import load_model
 
 from Config.initialization_model import VGG
@@ -14,9 +17,9 @@ from Config.preprocessing_utils import (
     resize_with_pad
 )
 
-def DetectingFashion(path: str, model_main: VGG, model_wear: VGG, device: torch.device, tf_model: load_model):
-    if (is_grayscale(path)):
-        ori = Image.open(path).convert("RGB")
+def DetectingFashion(base64_image: str, model_main: VGG, model_wear: VGG, device: torch.device, tf_model: load_model):
+    if (is_grayscale(path=base64_image)):
+        ori = Image.open(BytesIO(base64.b64decode(base64_image))).convert("RGB")
         main_color = max(ori.getcolors(ori.size[0]*ori.size[1]))[1]
         if (main_color != (0,0,0)):
             transGrayscale1 = transforms.Compose([
@@ -36,8 +39,8 @@ def DetectingFashion(path: str, model_main: VGG, model_wear: VGG, device: torch.
             img_normalized = img_normalized.unsqueeze_(0)
             img_normalized = img_normalized.to(device)
     else:
-        if DetectWearing(path=path, model=model_wear, device=device):
-            api = fashion_tools_segmentation(path, tf_model)
+        if DetectWearing(path=base64_image, model=model_wear, device=device):
+            api = fashion_tools_segmentation(base64_image, tf_model)
             image_ = api.get_dress(stack=False)
             cv2.imwrite("../images/Segmentation_Result",image_)
             ori = Image.open("../images/Segmentation_Result/out.png")
@@ -46,7 +49,7 @@ def DetectingFashion(path: str, model_main: VGG, model_wear: VGG, device: torch.
             cropped = CropObject(IMG=base_ori)
             imgS = resize_with_pad(im=cropped, target_width=500, target_height=500)
         else:
-            ori = Image.open(path).convert("RGB")
+            ori = Image.open(BytesIO(base64.b64decode(base64_image))).convert("RGB")
             p, l = ori.size
             base_ori = Image.new('RGB', (p, l), (255, 255, 255))
             output = remove(ori)

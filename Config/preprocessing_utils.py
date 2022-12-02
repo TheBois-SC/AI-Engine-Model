@@ -5,6 +5,8 @@ from torchvision.transforms import transforms
 from PIL import Image
 import numpy as np
 from rembg import remove
+from io import BytesIO, StringIO
+import base64
 import matplotlib.pyplot as plt
 import cv2
 import tensorflow as tf
@@ -24,7 +26,7 @@ def show(imgs):
 
 
 def is_grayscale(path):
-    im = Image.open(path).convert("RGB")
+    im = Image.open(BytesIO(base64.b64decode(path))).convert("RGB")
     stat = ImageStat.Stat(im)
     if sum(stat.sum) / 3 == stat.sum[0]:  # check the avg with any element value
         return True  # if grayscale
@@ -135,11 +137,17 @@ class fashion_tools_segmentation(object):
         self.model = model
         self.version = version
 
+    def readb64(base64_string):
+        sbuf = StringIO()
+        sbuf.write(base64.b64decode(base64_string))
+        pimg = Image.open(sbuf)
+        return cv2.cvtColor(np.array(pimg), cv2.COLOR_BGR2RGB)
+
     def get_fashion(self, stack=False):
         """limited to top wear and full body dresses (wild and studio working)"""
         """takes input rgb----> return PNG"""
         name = self.imageid
-        file = cv2.imread(name)
+        file = self.readb64(self.imageid)
         file = tf.image.resize_with_pad(file, target_height=512, target_width=512)
         rgb = file.numpy()
         file = np.expand_dims(file, axis=0) / 255.
@@ -160,7 +168,7 @@ class fashion_tools_segmentation(object):
 
 
 def DetectWearing(path: str, model: VGG, device: torch.device):
-    img = Image.open(path).convert("RGB")
+    img = Image.open(BytesIO(base64.b64decode(path))).convert("RGB")
     transform_norm_rgb = transforms.Compose([
         transforms.Resize((70, 70)),
         transforms.ToTensor()
