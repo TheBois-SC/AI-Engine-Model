@@ -23,7 +23,7 @@ def DetectingFashion(base64_image: str, model_main: VGG, model_wear: VGG, device
         main_color = max(ori.getcolors(ori.size[0]*ori.size[1]))[1]
         if (main_color != (0,0,0)):
             transGrayscale1 = transforms.Compose([
-                transforms.Resize((70,70)),
+                transforms.Resize((70, 70)),
                 transforms.RandomInvert(p=1),
                 transforms.ToTensor()
             ])
@@ -32,7 +32,7 @@ def DetectingFashion(base64_image: str, model_main: VGG, model_wear: VGG, device
             img_normalized = img_normalized.to(device)
         else:
             transGrayscale2 = transforms.Compose([
-                transforms.Resize((70,70)),
+                transforms.Resize((70, 70)),
                 transforms.ToTensor()
             ])
             img_normalized = transGrayscale2(ori).float()
@@ -40,10 +40,12 @@ def DetectingFashion(base64_image: str, model_main: VGG, model_wear: VGG, device
             img_normalized = img_normalized.to(device)
     else:
         if DetectWearing(path=base64_image, model=model_wear, device=device):
-            api = fashion_tools_segmentation(base64_image, tf_model)
-            image_ = api.get_dress(stack=False)
-            cv2.imwrite("../images/Segmentation_Result",image_)
-            ori = Image.open("../images/Segmentation_Result/out.png")
+            ori = Image.open(BytesIO(base64.b64decode(base64_image))).convert("RGB")
+            ori.save("./images/Segmentation_Result/in.jpg")  # Arahkan ke directory file yang benar
+            api = fashion_tools_segmentation(imageid="./images/Segmentation_Result/in.jpg", model=tf_model) # Arahkan ke directory file yang benar
+            image_ = api.get_fashion(stack=False)
+            cv2.imwrite("./images/Segmentation_Result/out.png", image_) # Arahkan ke directory file yang benar
+            ori = Image.open("./images/Segmentation_Result/out.png") # Arahkan ke directory file yang benar
             base_ori = Image.new('RGB', (ori.size[0], ori.size[1]), (255, 255, 255))
             base_ori.paste(ori, (0,0), ori)
             cropped = CropObject(IMG=base_ori)
@@ -72,6 +74,7 @@ def DetectingFashion(base64_image: str, model_main: VGG, model_wear: VGG, device
         model_main.eval()
         output =model_main(img_normalized)
         index = output.data.cpu().numpy().argmax()
+        # Class Index/List
         classes = ["Ankle Boot", "Bag", "Coat", "Dress", "Hat", "Pullover", "Sandal", "Shirt", "Sneaker", "T-shirt/Top", "Trouser"]
         class_name = classes[index]
-        return class_name
+        return index

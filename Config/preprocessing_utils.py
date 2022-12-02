@@ -137,17 +137,11 @@ class fashion_tools_segmentation(object):
         self.model = model
         self.version = version
 
-    def readb64(base64_string):
-        sbuf = StringIO()
-        sbuf.write(base64.b64decode(base64_string))
-        pimg = Image.open(sbuf)
-        return cv2.cvtColor(np.array(pimg), cv2.COLOR_BGR2RGB)
-
     def get_fashion(self, stack=False):
         """limited to top wear and full body dresses (wild and studio working)"""
         """takes input rgb----> return PNG"""
         name = self.imageid
-        file = self.readb64(self.imageid)
+        file = cv2.imread(name)
         file = tf.image.resize_with_pad(file, target_height=512, target_width=512)
         rgb = file.numpy()
         file = np.expand_dims(file, axis=0) / 255.
