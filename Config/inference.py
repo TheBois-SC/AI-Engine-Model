@@ -46,10 +46,9 @@ def DetectingFashion(base64_image: str, model_main: VGG, model_wear: VGG, device
             open_cv_image = cv2.cvtColor(open_cv_image, cv2.IMREAD_COLOR)
             api = fashion_tools_segmentation(imageid=open_cv_image, model=tf_model)
             image_ = api.get_fashion(stack=False)
-            cv2.imwrite("./images/Segmentation_Result/out.png", image_) # Arahkan ke directory file yang benar
-            ori = Image.open("./images/Segmentation_Result/out.png") # Arahkan ke directory file yang benar
+            ori = Image.fromarray((image_).astype(numpy.uint8)).convert('RGBA')
             base_ori = Image.new('RGB', (ori.size[0], ori.size[1]), (255, 255, 255))
-            base_ori.paste(ori, (0,0), ori)
+            base_ori.paste(ori, (0, 0), ori)
             cropped = CropObject(IMG=base_ori)
             imgS = resize_with_pad(im=cropped, target_width=500, target_height=500)
         else:
@@ -76,7 +75,17 @@ def DetectingFashion(base64_image: str, model_main: VGG, model_wear: VGG, device
         model_main.eval()
         output =model_main(img_normalized)
         index = output.data.cpu().numpy().argmax()
-        # Class Index/List
-        classes = ["Ankle Boot", "Bag", "Coat", "Dress", "Hat", "Pullover", "Sandal", "Shirt", "Sneaker", "T-shirt/Top", "Trouser"]
-        class_name = classes[index]
+        class_map = {
+            0: "Ankle Boot",
+            1: "Bag",
+            2: "Coat",
+            3: "Dress",
+            4: "Hat",
+            5: "Pullover",
+            6: "Sandal",
+            7: "Shirt",
+            8: "Sneaker",
+            9: "T-shirt/Top",
+            10: "Trouser"}
+        class_name = class_map[index]
         return index
