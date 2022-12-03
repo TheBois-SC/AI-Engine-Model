@@ -141,7 +141,7 @@ class fashion_tools_segmentation(object):
         """limited to top wear and full body dresses (wild and studio working)"""
         """takes input rgb----> return PNG"""
         name = self.imageid
-        file = cv2.imread(name)
+        file = name
         file = tf.image.resize_with_pad(file, target_height=512, target_width=512)
         rgb = file.numpy()
         file = np.expand_dims(file, axis=0) / 255.

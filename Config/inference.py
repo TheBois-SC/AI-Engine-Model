@@ -5,6 +5,7 @@ from rembg import remove
 import cv2
 from io import BytesIO
 import base64
+import numpy
 
 from keras.models import load_model
 
@@ -41,8 +42,9 @@ def DetectingFashion(base64_image: str, model_main: VGG, model_wear: VGG, device
     else:
         if DetectWearing(path=base64_image, model=model_wear, device=device):
             ori = Image.open(BytesIO(base64.b64decode(base64_image))).convert("RGB")
-            ori.save("./images/Segmentation_Result/in.jpg")  # Arahkan ke directory file yang benar
-            api = fashion_tools_segmentation(imageid="./images/Segmentation_Result/in.jpg", model=tf_model) # Arahkan ke directory file yang benar
+            open_cv_image = numpy.array(ori)
+            open_cv_image = cv2.cvtColor(open_cv_image, cv2.IMREAD_COLOR)
+            api = fashion_tools_segmentation(imageid=open_cv_image, model=tf_model)
             image_ = api.get_fashion(stack=False)
             cv2.imwrite("./images/Segmentation_Result/out.png", image_) # Arahkan ke directory file yang benar
             ori = Image.open("./images/Segmentation_Result/out.png") # Arahkan ke directory file yang benar
